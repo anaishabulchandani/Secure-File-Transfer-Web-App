@@ -89,7 +89,7 @@ def decrypt_bytes(encrypted_bytes: bytes, password: str) -> (bytes, str):
 
 
 # --- Streamlit UI
-st.set_page_config(page_title='Secure File Transfer (Streamlit + AES)', layout='centered')
+st.set_page_config(page_title='Secure File Transfer ', layout='centered')
 st.title(' Secure File Transfer — Streamlit (AES with Password)')
 st.write('Encrypt files with a password, download the encrypted blob, and decrypt using the same password.')
 
@@ -137,3 +137,4 @@ else:  # Decrypt
 # Footer
 st.markdown('---')
 st.caption('Educational demo: AES-256 (CBC) with PBKDF2 key derivation. Not audited for production use.')
+
