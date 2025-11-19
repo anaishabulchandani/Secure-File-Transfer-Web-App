@@ -120,21 +120,43 @@ if mode == 'Encrypt a file':
 else:  # Decrypt
     enc_file = st.file_uploader('Upload encrypted file (.sft)', accept_multiple_files=False)
     password = st.text_input('Enter password to decrypt', type='password', key='dec_pw')
+
     if enc_file and password:
         encrypted_bytes = enc_file.read()
+
         try:
             plain, orig_filename = decrypt_bytes(encrypted_bytes, password)
         except Exception as e:
             st.error(f'Decryption failed: {e}')
         else:
             st.success('Decryption succeeded!')
-            # Provide download button with original filename
-            st.download_button('Download decrypted file', data=plain, file_name=orig_filename)
-            st.write('If the download fails, try copying the bytes to a file manually (advanced).')
+
+            # Detect proper MIME type
+            import mimetypes
+            mime_type, _ = mimetypes.guess_type(orig_filename)
+            if mime_type is None:
+                mime_type = 'application/octet-stream'
+
+            # Correct download button
+            st.download_button(
+                label='Download decrypted file',
+                data=plain,
+                file_name=orig_filename,
+                mime=mime_type
+            )
+
+            # Preview PDF if it's a PDF
+            if orig_filename.lower().endswith('.pdf'):
+                import base64
+                b64 = base64.b64encode(plain).decode('utf-8')
+                pdf_display = f'<iframe src="data:application/pdf;base64,{b64}" width="100%" height="600"></iframe>'
+                st.markdown(pdf_display, unsafe_allow_html=True)
+
     elif enc_file and not password:
         st.warning('Enter password to decrypt the uploaded file.')
 
 # Footer
 st.markdown('---')
 st.caption('Educational demo: AES-256 (CBC) with PBKDF2 key derivation. Not audited for production use.')
+
 
